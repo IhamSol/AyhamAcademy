@@ -35,10 +35,12 @@ export default function LecturePage({ params }: { params: { id: string } }) {
     if (lecture) {
       if (lecture.isFree) {
         setIsAuthorized(true);
-      } else if (session?.user?.email && whitelist.includes(session.user.email)) {
+      } else if (session?.user?.email && whitelist.emails.includes(session.user.email)) {
+        // ✅ FIXED: Changed whitelist.includes to whitelist.emails.includes
         setIsAuthorized(true);
       } else if (status === "unauthenticated") {
-        router.push(`/login?callbackUrl=/lecture/${params.id}`);
+        router.push(`/api/auth/signin?callbackUrl=/lecture/${params.id}`);
+        // ✅ ALSO FIXED: Changed /login to /api/auth/signin
       } else if (status === "authenticated") {
         router.push("/unauthorized");
       }
