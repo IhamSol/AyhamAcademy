@@ -10,6 +10,19 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ user }) {
+      // ✅ Check if user's email is in whitelist
+      const userEmail = user.email?.toLowerCase();
+      const isAllowed = whitelist.emails.some(
+        (email) => email.toLowerCase() === userEmail
+      );
+      
+      if (!isAllowed) {
+        return false; // Reject sign-in
+      }
+      
+      return true; // Allow sign-in
+    },
     async jwt({ token, user }) {
       if (user) {
         token.email = user.email;
@@ -24,7 +37,8 @@ const handler = NextAuth({
     },
   },
   pages: {
-    signIn: "/login",
+    signIn: "/api/auth/signin",  // ✅ Use built-in NextAuth page
+    error: "/auth/error",         // Optional: custom error page
   },
 });
 
