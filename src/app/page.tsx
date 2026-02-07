@@ -1,66 +1,113 @@
 import Link from "next/link";
+import { getServerSession } from "next-auth";
 import courseData from "@/data/courseData.json";
 
-export default function Home() {
-  return (
-    <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <header className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
-            {courseData.title}
-          </h1>
-          <p className="mt-4 text-xl text-gray-600">
-            {courseData.description}
-          </p>
-        </header>
+export default async function Home() {
+  const session = await getServerSession();
 
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      {/* Navigation Bar */}
+      <nav className="bg-slate-950 border-b border-slate-700 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg">▶</span>
+            </div>
+            <h1 className="text-xl font-bold text-white">{courseData.title}</h1>
+          </div>
+          <div className="flex items-center space-x-4">
+            {session?.user ? (
+              <>
+                <span className="text-sm text-slate-300">{session.user.email}</span>
+                <Link
+                  href="/api/auth/signout"
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition"
+                >
+                  Sign Out
+                </Link>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition"
+              >
+                Sign In
+              </Link>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Header Section */}
+        <div className="mb-12">
+          <h2 className="text-4xl font-bold text-white mb-3">{courseData.title}</h2>
+          <p className="text-lg text-slate-300">{courseData.description}</p>
+        </div>
+
+        {/* Modules Grid */}
         <div className="space-y-8">
-          {courseData.modules.map((module) => (
-            <section key={module.id} className="bg-white shadow overflow-hidden sm:rounded-lg">
-              <div className="px-4 py-5 sm:px-6 bg-indigo-600">
-                <h2 className="text-lg leading-6 font-medium text-white">
-                  {module.title}
-                </h2>
+          {courseData.modules.map((module, moduleIndex) => (
+            <div key={module.id} className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden hover:border-slate-600 transition">
+              {/* Module Header */}
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">{moduleIndex + 1}</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-white">{module.title}</h3>
+                </div>
               </div>
-              <div className="border-t border-gray-200">
-                <ul className="divide-y divide-gray-200">
-                  {module.lectures.map((lecture) => (
-                    <li key={lecture.id}>
-                      <Link 
-                        href={`/lecture/${lecture.id}`}
-                        className="block hover:bg-gray-50 transition duration-150 ease-in-out"
-                      >
-                        <div className="px-4 py-4 sm:px-6 flex items-center justify-between">
-                          <div className="flex items-center">
-                            <p className="text-sm font-medium text-indigo-600 truncate">
-                              {lecture.title}
-                            </p>
-                            {lecture.isFree && (
-                              <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                Free
-                              </span>
-                            )}
-                            {!lecture.isFree && (
-                              <span className="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                Locked
-                              </span>
-                            )}
-                          </div>
-                          <div className="ml-2 flex-shrink-0 flex">
-                            <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                            </svg>
-                          </div>
+
+              {/* Lectures List */}
+              <div className="divide-y divide-slate-700">
+                {module.lectures.map((lecture, lectureIndex) => (
+                  <Link
+                    key={lecture.id}
+                    href={`/lecture/${lecture.id}`}
+                    className="block hover:bg-slate-700 transition px-6 py-4"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4 flex-1">
+                        <div className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <span className="text-slate-300 text-sm font-semibold">{lectureIndex + 1}</span>
                         </div>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                        <div className="flex-1">
+                          <p className="text-white font-medium">{lecture.title}</p>
+                          <p className="text-sm text-slate-400 mt-1">Video Lecture</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        {lecture.isFree ? (
+                          <span className="px-3 py-1 bg-green-500 bg-opacity-20 text-green-300 text-xs font-semibold rounded-full">
+                            FREE PREVIEW
+                          </span>
+                        ) : (
+                          <span className="px-3 py-1 bg-yellow-500 bg-opacity-20 text-yellow-300 text-xs font-semibold rounded-full">
+                            LOCKED
+                          </span>
+                        )}
+                        <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
               </div>
-            </section>
+            </div>
           ))}
         </div>
+
+        {/* Info Box */}
+        <div className="mt-12 bg-blue-600 bg-opacity-10 border border-blue-500 border-opacity-30 rounded-xl p-6">
+          <p className="text-blue-200 text-sm">
+            <span className="font-semibold">💡 Tip:</span> Click on any lecture to start watching. Free preview lectures are available to everyone. Locked lectures require authentication.
+          </p>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
