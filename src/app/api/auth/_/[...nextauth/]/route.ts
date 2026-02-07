@@ -5,21 +5,26 @@ import whitelist from "@/data/whitelist.json";
 const handler = NextAuth({
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
   ],
   callbacks: {
-    async signIn({ user }) {
-      if (user.email && whitelist.includes(user.email)) {
-        return true;
+    async jwt({ token, user }) {
+      if (user) {
+        token.email = user.email;
       }
-      return "/unauthorized";
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.email = token.email as string;
+      }
+      return session;
     },
   },
   pages: {
     signIn: "/login",
-    error: "/unauthorized",
   },
 });
 
