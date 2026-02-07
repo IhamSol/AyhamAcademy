@@ -5,35 +5,52 @@ export default async function UnauthorizedPage() {
   const session = await getServerSession();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full text-center space-y-8">
-        <div className="bg-white p-8 rounded-lg shadow-md">
-          <svg className="mx-auto h-12 w-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <h2 className="mt-4 text-2xl font-bold text-gray-900">Access Denied</h2>
-          <p className="mt-2 text-gray-600">
-            {session?.user?.email 
-              ? `The email (${session.user.email}) is not authorized to access this course.` 
-              : "You do not have access to this content."}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
+      <div className="w-full max-w-md">
+        {/* Error Icon */}
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-red-500 bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-2">Access Denied</h1>
+          <p className="text-slate-400">You don't have permission to access this content</p>
+        </div>
+
+        {/* Error Card */}
+        <div className="bg-slate-800 border border-slate-700 rounded-2xl p-8 shadow-2xl mb-6">
+          <div className="bg-red-500 bg-opacity-10 border border-red-500 border-opacity-30 rounded-lg p-4 mb-6">
+            <p className="text-red-200 text-sm">
+              {session?.user?.email
+                ? `Email: ${session.user.email} is not authorized to access this course.`
+                : "Your account is not authorized to access this content."}
+            </p>
+          </div>
+
+          <p className="text-slate-300 text-center mb-6">
+            To gain access, please contact the course owner or purchase the course.
           </p>
-          <p className="mt-4 text-sm text-gray-500">
-            Please contact the course owner to get access or purchase the course.
-          </p>
-          <div className="mt-6 space-y-4">
+
+          <div className="space-y-3">
             <Link
               href="/"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+              className="w-full flex justify-center py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-lg font-semibold transition transform hover:scale-105 active:scale-95"
             >
               Back to Homepage
             </Link>
             <Link
               href="/api/auth/signout"
-              className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              className="w-full flex justify-center py-3 px-4 border border-slate-600 hover:border-slate-500 text-slate-300 hover:text-white rounded-lg font-semibold transition"
             >
-              Sign out and try another account
+              Sign Out & Try Another Account
             </Link>
           </div>
+        </div>
+
+        {/* Info */}
+        <div className="text-center text-sm text-slate-400">
+          <p>If you believe this is an error, please contact support.</p>
         </div>
       </div>
     </div>
