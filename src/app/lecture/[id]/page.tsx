@@ -31,13 +31,14 @@ export default async function LecturePage({ params }: { params: { id: string } }
     );
   }
 
-  // Check access
-  const isAuthorized = session?.user?.email && whitelist.includes(session.user.email);
+  // Check access - ✅ FIXED: whitelist.emails.includes
+  const isAuthorized = session?.user?.email && whitelist.emails.includes(session.user.email);
   const canView = currentLecture.isFree || isAuthorized;
 
   if (!canView) {
     if (!session) {
-      redirect(`/login?callbackUrl=/lecture/${params.id}`);
+      // ✅ FIXED: redirect syntax and using NextAuth sign-in
+      redirect(`/api/auth/signin?callbackUrl=/lecture/${params.id}`);
     } else {
       redirect("/unauthorized");
     }
@@ -67,38 +68,4 @@ export default async function LecturePage({ params }: { params: { id: string } }
               className="w-full h-full"
               allow="autoplay"
               allowFullScreen
-            ></iframe>
-          </div>
-          <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-900">{currentLecture.title}</h1>
-            <p className="mt-2 text-gray-600">
-              {currentLecture.isFree ? "This is a free preview lecture." : "Paid content accessible to enrolled students."}
-            </p>
-            
-            <div className="mt-8 border-t pt-6">
-              <h3 className="text-lg font-semibold mb-4">Course Progress</h3>
-              <div className="space-y-2">
-                {courseData.modules.map(m => (
-                  <div key={m.id}>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{m.title}</p>
-                    <div className="ml-2 mt-1 space-y-1">
-                      {m.lectures.map(l => (
-                        <Link 
-                          key={l.id} 
-                          href={`/lecture/${l.id}`}
-                          className={`block text-sm p-2 rounded ${l.id === params.id ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
-                        >
-                          {l.title} {l.isFree && <span className="text-[10px] bg-green-100 text-green-700 px-1 rounded ml-1">FREE</span>}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-}
+            ></ifra
