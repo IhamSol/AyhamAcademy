@@ -1,0 +1,36 @@
+{
+  "title": "OOP",
+  "description": "The ultimate video-only course for beginners and pros alike.",
+  "modules": [
+    {
+      "id": "m1",
+      "title": "Module 1: Set1",
+      "lectures": [
+        {
+          "id": "intro-to-oop",
+          "title": "Course Overview",
+          "videoUrl": "https://drive.google.com/file/d/1WmjrCzxaVf0t09nM9BZlEtLQQvVETzOI/preview",
+          "isFree": true
+        },
+        {
+          "id": "c++ revesion",
+          "title": "Tools and Setup",
+          "videoUrl": "https://drive.google.com/file/d/1WmjrCzxaVf0t09nM9BZlEtLQQvVETzOI/preview",
+          "isFree": false
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "title": "Module 2: Core Techniques",
+      "lectures": [
+        {
+          "id": "core-1",
+          "title": "Deep Dive into Basics",
+          "videoUrl": "https://drive.google.com/file/d/1WmjrCzxaVf0t09nM9BZlEtLQQvVETzOI/preview",
+          "isFree": false
+        }
+      ]
+    }
+  ]
+}
