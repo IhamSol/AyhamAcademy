@@ -10,18 +10,34 @@ const handler = NextAuth({
     }),
   ],
   callbacks: {
-    async signIn({ user }) {
-      // ✅ Check if user's email is in whitelist
-      const userEmail = user.email?.toLowerCase();
-      const isAllowed = whitelist.emails.some(
-        (email) => email.toLowerCase() === userEmail
-      );
-      
-      if (!isAllowed) {
-        return false; // Reject sign-in
+    async signIn({ user, account, profile }) {
+      try {
+        // ✅ Check if user's email is in whitelist
+        const userEmail = user.email?.toLowerCase();
+        
+        // ✅ Add safety check for userEmail
+        if (!userEmail) {
+          console.log("No email provided by Google");
+          return false;
+        }
+
+        // ✅ Ensure whitelist.emails exists and is an array
+        const allowedEmails = Array.isArray(whitelist.emails) ? whitelist.emails : [];
+        
+        const isAllowed = allowedEmails.some(
+          (email) => email.toLowerCase() === userEmail
+        );
+        
+        if (!isAllowed) {
+          console.log(`User ${userEmail} not in whitelist`);
+          return "/auth/error?error=AccessDenied"; // Redirect to error page
+        }
+        
+        return true; // Allow sign-in
+      } catch (error) {
+        console.error("Sign in error:", error);
+        return false;
       }
-      
-      return true; // Allow sign-in
     },
     async jwt({ token, user }) {
       if (user) {
@@ -30,15 +46,15 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.email = token.email as string;
+      if (session.user && token.email) {
+        session.user.email = token.email;
       }
       return session;
     },
   },
   pages: {
-    signIn: "/api/auth/signin",  // ✅ Use built-in NextAuth page
-    error: "/auth/error",         // Optional: custom error page
+    signIn: "/auth/signin",     // ✅ Custom sign-in page path
+    error: "/auth/error",       // ✅ Custom error page
   },
 });
 
