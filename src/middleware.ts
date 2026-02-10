@@ -5,5 +5,5 @@ export default withAuth(function middleware(req) {
 });
 
 export const config = {
-  matcher: ["/lecture/:path*", "/dashboard/:path*"],
+  matcher: ["/dashboard/:path*"],
 };
