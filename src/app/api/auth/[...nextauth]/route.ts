@@ -30,7 +30,7 @@ const handler = NextAuth({
         
         if (!isAllowed) {
           console.log(`User ${userEmail} not in whitelist`);
-          return "/auth/error?error=AccessDenied"; // Redirect to error page
+          return "/unauthorized?error=AccessDenied"; // Redirect to error page
         }
         
         return true; // Allow sign-in
@@ -53,8 +53,8 @@ const handler = NextAuth({
     },
   },
   pages: {
-    signIn: "/auth/signin",     // ✅ Custom sign-in page path
-    error: "/auth/error",       // ✅ Custom error page
+    signIn: "/login",
+    error: "/unauthorized",
   },
 });
 
