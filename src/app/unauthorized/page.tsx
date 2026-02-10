@@ -39,7 +39,7 @@ export default async function UnauthorizedPage() {
               href="/api/auth/signout"
               className="w-full flex justify-center py-3 px-4 border border-slate-600 hover:border-slate-500 text-slate-300 hover:text-white rounded-lg font-semibold transition"
             >
-              Sign Out &amp; Try Another Account
+              Sign Out & Try Another Account
             </Link>
           </div>
 
