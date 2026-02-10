@@ -62,7 +62,7 @@ export default async function LecturePage({ params }: { params: { id: string } }
 
       <main className="max-w-5xl mx-auto py-8 px-4">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="aspect-video w-full bg-black">
+          <div className="aspect-video w-full bg-black relative overflow-hidden">
             <iframe
               src={currentLecture.videoUrl}
               className="w-full h-full"
@@ -71,6 +71,8 @@ export default async function LecturePage({ params }: { params: { id: string } }
               referrerPolicy="no-referrer-when-downgrade"
               title={currentLecture.title}
             ></iframe>
+            {/* Overlay to hide the pop-out/open-in-new-window icon */}
+            <div className="absolute top-0 right-0 w-14 h-14 bg-black z-10 pointer-events-auto" />
           </div>
           <div className="p-6">
             <h1 className="text-2xl font-bold text-gray-900">{currentLecture.title}</h1>
