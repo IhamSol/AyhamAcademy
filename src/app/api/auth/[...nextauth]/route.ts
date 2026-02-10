@@ -30,7 +30,7 @@ const handler = NextAuth({
         
         if (!isAllowed) {
           console.log(`User ${userEmail} not in whitelist`);
-          return "/auth/error?error=AccessDenied"; // Redirect to error page
+          return false;
         }
         
         return true; // Allow sign-in
