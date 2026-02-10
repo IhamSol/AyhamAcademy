@@ -1,27 +1,8 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import CourseData from "@/data/courseData.json";
-import Whitelist from "@/data/whitelist.json";
+import { getServerSession } from "next-auth";
 
 export default async function UnauthorizedPage() {
   const session = await getServerSession();
-
-  // Find the lecture in our data
-  let currentLecture = null;
-  let currentModule = null;
-
-  for (const module of courseData.modules) {
-    const lecture = module.lectures.find(l => l.id === params.id);
-    if (lecture) {
-      currentLecture = lecture;
-      currentModule = module;
-      break;
-    }
-  }
-
-  if (!currentLecture) {
-    return redirect("/error/tutorial"); // Redirect to a tutorial page if no lecture is found
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
@@ -42,7 +23,7 @@ export default async function UnauthorizedPage() {
           <div className="bg-red-500 bg-opacity-10 border border-red-500 border-opacity-30 rounded-lg p-4 mb-6">
             <p className="text-red-200 text-sm">
               {session?.user?.email
-                ? `Email: ${session.user.email} is not authorized to access this course.`
+                ? `Email: ${session?.user?.email} is not authorized to access this course.`
                 : "Your account is not authorized to access this content."}
             </p>
           </div>
