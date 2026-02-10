@@ -1,9 +1,5 @@
-import { withAuth } from "next-auth/middleware";
-
-export default withAuth(function middleware(req) {
-  return undefined;
-});
+export { default } from "next-auth/middleware";
 
 export const config = {
-  matcher: ["/lecture/:path*", "/dashboard/:path*"],
+  matcher: ["/dashboard/:path*"],
 };
