@@ -9,13 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "lucide-react": "^0.330.0",
     "next": "14.1.0",
     "next-auth": "^4.24.5",
     "react": "^18",
-    "react-dom": "^18",
-    "lucide-react": "^0.330.0"
+    "react-dom": "^18"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
