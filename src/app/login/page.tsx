@@ -32,9 +32,10 @@ export default async function LecturePage({ params }: { params: { id: string } }
   }
 
   // Check access - ✅ FIXED: Proper case-insensitive whitelist check
-  const isAuthorized = session?.user?.email && 
+  const userEmail = session?.user?.email?.toLowerCase();
+  const isAuthorized = userEmail && 
     whitelist.emails.some(email => 
-      email.toLowerCase() === session.user.email.toLowerCase()
+      email.toLowerCase() === userEmail
     );
   const canView = currentLecture.isFree || isAuthorized;
 
