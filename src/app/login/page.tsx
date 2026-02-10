@@ -1,67 +1,110 @@
-"use client";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import courseData from "@/data/courseData.json";
+import whitelist from "@/data/whitelist.json";
 
-import { signIn, useSession } from "next-auth/react";
-import { useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-
-function LoginContent() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.push(callbackUrl);
+export default async function LecturePage({ params }: { params: { id: string } }) {
+  const session = await getServerSession();
+  
+  // Find the lecture in our data
+  let currentLecture = null;
+  let currentModule = null;
+  
+  for (const module of courseData.modules) {
+    const lecture = module.lectures.find(l => l.id === params.id);
+    if (lecture) {
+      currentLecture = lecture;
+      currentModule = module;
+      break;
     }
-  }, [status, router, callbackUrl]);
+  }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        {/* Logo/Header */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-3xl">▶</span>
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-slate-400">Sign in to access your course</p>
-        </div>
-
-        {/* Login Card */}
-        <div className="bg-slate-800 border border-slate-700 rounded-2xl p-8 shadow-2xl">
-          <button
-            onClick={() => signIn("google", { callbackUrl })}
-            className="w-full flex items-center justify-center space-x-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-xl transition transform hover:scale-105 active:scale-95"
-          >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.908 3.152-1.928 4.176-1.02 1.024-2.588 2.136-5.912 2.136-5.4 0-9.76-4.36-9.76-9.76s4.36-9.76 9.76-9.76c3.028 0 5.28 1.188 6.944 2.752l2.304-2.304C19.64 1.152 16.42 0 12.48 0 5.58 0 0 5.58 0 12.48s5.58 12.48 12.48 12.48c3.748 0 6.572-1.232 8.776-3.532 2.272-2.272 2.98-5.456 2.98-8.12 0-.788-.064-1.54-.18-2.256H12.48z" />
-            </svg>
-            <span>Continue with Google</span>
-          </button>
-
-          <div className="mt-6 pt-6 border-t border-slate-700">
-            <p className="text-center text-sm text-slate-400">
-              Use your Google account to sign in. Your email must be authorized to access paid content.
-            </p>
-          </div>
-        </div>
-
-        {/* Info Box */}
-        <div className="mt-6 bg-blue-600 bg-opacity-10 border border-blue-500 border-opacity-30 rounded-xl p-4">
-          <p className="text-blue-200 text-sm text-center">
-            <span className="font-semibold">ℹ️ First time?</span> Your email will be checked against our authorized list.
-          </p>
+  if (!currentLecture) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">Lecture not found</h1>
+          <Link href="/" className="text-indigo-600 hover:underline mt-4 block">Back to Home</Link>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-export default function LoginPage() {
+  // Check access - ✅ FIXED: Proper case-insensitive whitelist check
+  const isAuthorized = session?.user?.email && 
+    whitelist.emails.some(email => 
+      email.toLowerCase() === session.user.email.toLowerCase()
+    );
+  const canView = currentLecture.isFree || isAuthorized;
+
+  if (!canView) {
+    if (!session) {
+      // ✅ FIXED: Correct redirect syntax for App Router
+      redirect(`/api/auth/signin?callbackUrl=/lecture/${params.id}`);
+    } else {
+      redirect("/unauthorized");
+    }
+  }
+
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
-      <LoginContent />
-    </Suspense>
+    <div className="min-h-screen bg-gray-100">
+      <nav className="bg-white shadow-sm py-4 px-6">
+        <div className="max-w-5xl mx-auto flex justify-between items-center">
+          <Link href="/" className="text-indigo-600 font-bold flex items-center">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Course
+          </Link>
+          <div className="text-gray-600 text-sm font-medium">
+            {currentModule?.title} &raquo; {currentLecture.title}
+          </div>
+        </div>
+      </nav>
+
+      <main className="max-w-5xl mx-auto py-8 px-4">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="aspect-video w-full bg-black">
+            {/* ✅ FIXED: Added security attributes and error handling */}
+            <iframe
+              src={currentLecture.videoUrl}
+              className="w-full h-full"
+              allow="autoplay; fullscreen"
+              allowFullScreen
+              title={currentLecture.title}
+            ></iframe>
+          </div>
+          <div className="p-6">
+            <h1 className="text-2xl font-bold text-gray-900">{currentLecture.title}</h1>
+            <p className="mt-2 text-gray-600">
+              {currentLecture.isFree ? "This is a free preview lecture." : "Paid content accessible to enrolled students."}
+            </p>
+            
+            <div className="mt-8 border-t pt-6">
+              <h3 className="text-lg font-semibold mb-4">Course Progress</h3>
+              <div className="space-y-2">
+                {courseData.modules.map(m => (
+                  <div key={m.id}>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{m.title}</p>
+                    <div className="ml-2 mt-1 space-y-1">
+                      {m.lectures.map(l => (
+                        <Link 
+                          key={l.id}
+                          href={`/lecture/${l.id}`}
+                          className={`block text-sm p-2 rounded ${l.id === params.id ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-600 hover:bg-gray-50'}`}
+                        >
+                          {l.title} {l.isFree && <span className="text-[10px] bg-green-100 text-green-700 px-1 rounded ml-1">FREE</span>}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }
