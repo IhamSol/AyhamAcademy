@@ -19,18 +19,4 @@
           "isFree": false
         }
       ]
-    },
-    {
-      "id": "m2",
-      "title": "Module 2: Core Techniques",
-      "lectures": [
-        {
-          "id": "core-1",
-          "title": "Deep Dive into Basics",
-          "videoUrl": "https://drive.google.com/file/d/1kDCCrI63Ktacus6D1NZ5g8w_sPGzqY2V/preview",
-          "isFree": false
-        }
-      ]
     }
-  ]
-}
