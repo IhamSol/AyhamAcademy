@@ -66,8 +66,10 @@ export default async function LecturePage({ params }: { params: { id: string } }
             <iframe
               src={currentLecture.videoUrl}
               className="w-full h-full"
-              allow="autoplay"
+              allow="autoplay; encrypted-media"
               allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+              title={currentLecture.title}
             ></iframe>
           </div>
           <div className="p-6">
